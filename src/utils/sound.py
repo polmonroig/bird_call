@@ -5,6 +5,10 @@ def load_audio(path, mono=True):
     """
     Return the audio data in mono form of a file and the sample
     rate
+
+    path: the path where the audio is located
+    mono: specify to use mono instead of stereo
+
     """
     audio = torchaudio.load(path)
     if mono:
@@ -29,3 +33,15 @@ def divide_into_chunks(audio, chunk_size, min_size):
         return chunks[:-1]
     else:
         return chunks
+
+
+def empty_chunk(audio_chunk):
+    """
+    Given an audio chunk, returns if the chunk is empty or not,
+    meaning that it is too quiet, thus contains too few information
+    to be useful to the model's training
+
+    audio_chunk: the chunk to analize
+
+    """
+    return False 
