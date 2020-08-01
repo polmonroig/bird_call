@@ -3,6 +3,7 @@ from utils import sound
 import argparse
 
 
+
 def get_parser():
     parser = argparse.ArgumentParser(description='Prepare data from training')
     parser.add_argument('--chunk_size', dest='chunk_size',
@@ -30,6 +31,7 @@ def main():
     sample_class = audio_directories[0]
     print('Selecting class', sample_class)
     audio_files = filesystem.listdir_complete(sample_class)
+    class_name = sample_class.split('/')[-1]
     print('Total audio files', len(audio_files))
     print('Loading file:', audio_files[0])
     sample_audio = sound.load_audio(audio_files[0])
@@ -37,7 +39,8 @@ def main():
     print('Waveform sample rate:', sample_audio[1])
     sample_audio = sound.divide_into_chunks(sample_audio, chunk_size, min_chunk_size)
     print('Total chunks created:', len(sample_audio))
-    print('Last chunk:', len(sample_audio[-2]))
+    filesystem.save_chunks(sample_audio, class_name)
+
 
 if __name__ == '__main__':
     main()
