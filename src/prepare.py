@@ -19,6 +19,7 @@ def main():
         - Data augmentation
         - Data filtering
         - Waveform chunk subdivision
+        - Chunk selection 
     """
     print('Initializing data preparation...')
     parser = get_parser()
@@ -33,14 +34,17 @@ def main():
     audio_files = filesystem.listdir_complete(sample_class)
     class_name = sample_class.split('/')[-1]
     print('Total audio files', len(audio_files))
-    print('Loading file:', audio_files[0])
-    sample_audio = sound.load_audio(audio_files[0])
-    sample_rate = sample_audio[1]
-    print('Waveform length:', len(sample_audio[0]))
-    print('Waveform sample rate:', sample_audio[1])
-    sample_audio = sound.divide_into_chunks(sample_audio[0], chunk_size, min_chunk_size)
-    print('Total chunks created:', len(sample_audio))
-    filesystem.save_chunks(sample_audio, class_name, sample_rate)
+    audio_index = 0
+    for audio in audio_files: 
+        print('Loading file:', audio)
+        sample_audio = sound.load_audio(audio)
+        sample_rate = sample_audio[1]
+        print('Waveform length:', len(sample_audio[0]))
+        print('Waveform sample rate:', sample_audio[1])
+        sample_audio = sound.divide_into_chunks(sample_audio[0], chunk_size, min_chunk_size)
+        print('Total chunks created:', len(sample_audio))
+        filesystem.save_chunks(sample_audio, class_name, audio_index)
+        audio_index += len(sample_audio)
 
 
 if __name__ == '__main__':

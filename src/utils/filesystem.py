@@ -11,7 +11,7 @@ def listdir_complete(path):
     return [os.path.join(path, f) for f in os.listdir(path)]
 
 
-def save_chunks(chunks, class_name, sample_rate):
+def save_chunks(chunks, class_name, index, sample_rate=44100):
     """
     Given a list of chunks and a class name
     save each chunk in a separate file
@@ -19,9 +19,9 @@ def save_chunks(chunks, class_name, sample_rate):
     dir = os.path.join(train_audio_chunks_dir, class_name)
     if not os.path.exists(dir):
         os.makedirs(dir)
-    for i, chunk in enumerate(chunks):
-        torchaudio.save(os.path.join(dir, 'chunk_' + str(i) + '.mp3'), chunk, sample_rate)
-
+    for chunk in chunks:
+        torchaudio.save(os.path.join(dir, 'chunk_' + str(index) + '.mp3'), chunk, sample_rate)
+        index += 1
 
 # general path variables
 # each path variable is defined by *_dir
