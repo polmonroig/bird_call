@@ -38,7 +38,7 @@ def main():
     sample_rate = sample_audio[1]
     print('Waveform length:', len(sample_audio[0]))
     print('Waveform sample rate:', sample_audio[1])
-    sample_audio = sound.divide_into_chunks(sample_audio, chunk_size, min_chunk_size)
+    sample_audio = sound.divide_into_chunks(sample_audio[0], chunk_size, min_chunk_size)
     print('Total chunks created:', len(sample_audio))
     filesystem.save_chunks(sample_audio, class_name, sample_rate)
 

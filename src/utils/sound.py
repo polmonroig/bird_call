@@ -17,7 +17,7 @@ def load_audio(path, mono=True):
         return audio
 
 
-def divide_into_chunks(audio, chunk_size, min_size):
+def divide_into_chunks(audio, chunk_size, min_size, sample_rate=44100):
     """
     Given an audiio waveform, it divides it into equal size
     chunks. The final chunk may be discarded or padded.
@@ -27,8 +27,8 @@ def divide_into_chunks(audio, chunk_size, min_size):
     min_size: defines the minimum size that the chunk must have to padd it
 
     """
-    chunks = torch.split(audio[0], int(chunk_size * audio[1]))
-    last_chunk_duration = len(chunks[-1]) / audio[1]
+    chunks = torch.split(audio, int(chunk_size * sample_rate))
+    last_chunk_duration = len(chunks[-1]) / sample_rate
     if last_chunk_duration >= min_size:
         return chunks[:-1]
     else:
