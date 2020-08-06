@@ -3,7 +3,17 @@ import torch
 
 
 class FeatureExtractor(nn.Module):
+    """
+    The FeatureExtractor is an autoencoder model that works by learning 
+    a mapping of the raw audio wave into a smaller dimensional space 
+    with high level features. This model is train in an unsupervised manner 
+    as an undercomplete autoencoder. The objective is to create a model 
+    that extracts the most important features of the audio, similarly to 
+    a log-mel audio transform but with a noise reduction. It must learn to 
+    represent audio without the noise. 
 
+    """
+    
     def __init__(self):
         super().__init__()
         self.encoder = nn.Sequential(
@@ -36,7 +46,12 @@ class FeatureExtractor(nn.Module):
 
 
 class Classifier(nn.Module):
-
+    """
+    The Classifier is a small neural netork that learns to classify 
+    bird audio waves based on the features that are extracted previosly. 
+    An aribrary encoder must be provide that is compatible with the 
+    classification layers. 
+    """
     def __init__(self, encoder):
         super().__init__() 
         self.encoder = encoder

@@ -1,9 +1,15 @@
 from torch.utils.data import Dataset 
 from utils import filesystem, sound 
+import numpy as np 
+import os 
 
 
 class GenerativeDataset(Dataset):
-
+    """
+    For any data feature extraction method we require a specific dataset 
+    to train it, the GenerativeDataset selects audio chunks from the specified 
+    directories and returns (audio, audio) pairs for an unsupervised training. 
+    """
     def __init__(self, directories): 
         self.dirs = directories 
         self.files = []
@@ -26,7 +32,13 @@ class GenerativeDataset(Dataset):
     
 
 class DiscriminativeDataset(Dataset):
-
+    """
+    The DiscrimainativeDataset is used in a discriminative task 
+    where we wish to classify each audio chunk. For this, we return 
+    (audio, label) pairs that contain a label in a specific nuemrical 
+    encoding, the encoding is independent on the dataset and must be
+    specified by a user-specific label encoder/decoder. 
+    """
     def __init__(self, directories, encoder):
         self.dirs = directories 
         self.files = []
@@ -60,6 +72,14 @@ class LabelsEncoder:
 
     def __init__(self, encodings):
         self.encodings = encodings 
+
+    @staticmethod 
+    def generate_encoding(path):
+        classes = os.listdir(filesystem.train_audio_dir)
+        classes = np.array(sorted(classes))
+        output = np.array(len(classes, 2))
+        output[:, 0], output[:, 1] = classes, np.arange(len(classes))
+        np.savetxt(path, output, delimeter=',')
 
     def encode(self, labels):
         return labels 
