@@ -31,6 +31,7 @@ train_audio_chunks_dir = os.path.join(data_dir, 'train_audio_chunks')
 example_test_audio_dir = os.path.join(data_dir, 'example_test_audio')
 # general file variables
 # each file variable is defined by *_file
+labels_encoding_file = os.path.join(data_dir, 'encodings.csv')
 sample_submission_file = os.path.join(data_dir, 'sample_submission.csv')
 train_file = os.path.join(data_dir, 'train.csv')
 test_file = os.path.join(data_dir, 'test.csv')

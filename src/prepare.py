@@ -1,5 +1,6 @@
 from utils import filesystem
 from utils import sound
+from data import LabelsEncoder
 import argparse
 
 
@@ -19,7 +20,7 @@ def main():
         - Data augmentation
         - Data filtering
         - Waveform chunk subdivision
-        - Chunk selection 
+        - Chunk selection
     """
     print('Initializing data preparation...')
     parser = get_parser()
@@ -27,7 +28,10 @@ def main():
     chunk_size = args.chunk_size
     min_chunk_size = args.min_chunk_size
 
+    print('Generating labels encodings...')
+    LabelsEncoder.generate_encoding(filesystem.labels_encoding_file)
 
+    print('Creating audio chunks...')
     audio_directories = filesystem.train_audio_files
     sample_class = audio_directories[0]
     print('Selecting class', sample_class)
@@ -35,7 +39,7 @@ def main():
     class_name = sample_class.split('/')[-1]
     print('Total audio files', len(audio_files))
     audio_index = 0
-    for audio in audio_files: 
+    for audio in audio_files:
         print('Loading file:', audio)
         sample_audio = sound.load_audio(audio)
         sample_rate = sample_audio[1]
