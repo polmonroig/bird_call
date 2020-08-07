@@ -1,37 +1,53 @@
-from model import FeatureExtractor 
-import torch.optim as optim 
-import torch.nn as nn 
-import torch 
+from model import FeatureExtractor, train_step, eval_step
+from utils import filesystem
+import torch.optim as optim
+import torch.nn as nn
+import torch
 import wandb
-import argparse 
+import argparse
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Train the neural network')
 
-    return parser 
+    return parser
 
 
-def train_autoencoder(device):
-    model = FeatureExtractor() 
+def wandb_parameter_register(args):
+    pass
+
+def train_autoencoder(device, args):
+    # model definition
+    model = FeatureExtractor()
     model.to(device)
-    print(model) 
+    # data definition
+    train_chunks =
+    train_dataset = GenerativeDataset()
 
-def train_classifier(device):
+    # main loop
+    optimizer = optim.SGD()
+    for epoch in args.n_epochs:
+        print('Epoch:', epoch, '/', args.n_epochs)
+
+
+    print(model)
+
+def train_classifier(device, args):
     raise NotImplementedError()
 
 def main():
     print('Initializing model training...')
-    parser = get_parser() 
-    args = parser.parse_args() 
+    parser = get_parser()
+    args = parser.parse_args()
     device = torch.device('cpu')
-    if torch.cuda.is_available(): 
+    if torch.cuda.is_available():
         print('Running on gpu')
         device = torch.device('cuda')
     else:
         print('Running on cpu')
 
-    train_autoencoder(device)
-    #train_classifier(device)
+    wandb_parameter_register(args)
+    train_autoencoder(device, args)
+    #train_classifier(device, args)
 
 if __name__ == '__main__':
     main()
