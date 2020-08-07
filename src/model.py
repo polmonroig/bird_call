@@ -59,7 +59,8 @@ class Classifier(nn.Module):
 
 
 def train_step(model, data_loader, optimizer, loss_criterion):
-    raise NotImplementedError()
+    model.train()
+
 
 def eval_step(model, data_loader, loss_criterion):
-    raise NotImplementedError()
+    model.eval()

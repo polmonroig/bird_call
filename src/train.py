@@ -8,7 +8,10 @@ import argparse
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Train the neural network')
-
+    parser.add_argument('--n_epochs', type=int, help='Number of epochs for the training loop')
+    parser.add_argument('--batch_size', type=int, help='Batch size of the training and eval set')
+    parser.add_argument('--verbose_epochs', type=int, help='Number of epochs per training verbose output')
+    parser.add_argument('--lr', type=float, help='Learning rate of the optimizer')
     return parser
 
 
@@ -27,7 +30,8 @@ def train_autoencoder(device, args):
     optimizer = optim.SGD()
     for epoch in args.n_epochs:
         print('Epoch:', epoch, '/', args.n_epochs)
-
+        train_step(model, )
+        eval_step(model)
 
     print(model)
 
