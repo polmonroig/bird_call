@@ -58,9 +58,27 @@ class Classifier(nn.Module):
 
 
 
-def train_step(model, data_loader, optimizer, loss_criterion):
+def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
     model.train()
+    for i, data in enumerate(data_loader):
+        optimizer.zero_grad()
+        data, labels = data
+        data = data.to(device)
+        out = model(data)
+        loss = loss_criterion(out, data)
+        loss.backward()
+        optimizer.step()
+        if i % verbose_epochs == 0:
+            print('Loss:', loss)
 
 
-def eval_step(model, data_loader, loss_criterion):
+
+def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
     model.eval()
+    for i, data in enumerate(data_loader):
+        data, labels = data
+        data = data.to(device)
+        out = model(data)
+        loss = loss_criterion(out, data)
+        if i % verbose_epochs == 0:
+            print('Loss:', loss)
