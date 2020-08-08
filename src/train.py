@@ -39,18 +39,17 @@ def train_autoencoder(device, args):
     eval_dataset = GenerativeDataset(eval_chunks)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-    train_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
+    eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-
 
     # main loop
     optimizer = optim.SGD()
+    loss_criterion = nn.MSE()
     for epoch in args.n_epochs:
         print('Epoch:', epoch, '/', args.n_epochs)
-        train_step(model, )
-        eval_step(model)
+        train_step(model, train_dataloader, optimizer, loss_criterion)
+        eval_step(model, eval_dataloader, loss_criterion)
 
-    print(model)
 
 def train_classifier(device, args):
     raise NotImplementedError()
