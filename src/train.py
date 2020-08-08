@@ -1,5 +1,6 @@
 from model import FeatureExtractor, train_step, eval_step
 from utils import filesystem
+from sklearn.model_selection import train_test_split
 import torch.optim as optim
 import torch.nn as nn
 import torch
@@ -12,6 +13,7 @@ def get_parser():
     parser.add_argument('--batch_size', type=int, help='Batch size of the training and eval set')
     parser.add_argument('--verbose_epochs', type=int, help='Number of epochs per training verbose output')
     parser.add_argument('--lr', type=float, help='Learning rate of the optimizer')
+    parser.add_argument('--eval_size', type=float, help='Evaluation dataset percentage')
     return parser
 
 
@@ -23,7 +25,15 @@ def train_autoencoder(device, args):
     model = FeatureExtractor()
     model.to(device)
     # data definition
-    train_chunks =
+    all_chunks = []
+    # concatenate all chunk files
+    # note that it is independent of the
+    # class of each chunk sinc we are creating
+    # a generative dataset
+    for label in filesystem.listdir_complete(filesystem.train_audio_chunks_dir):
+        chunks = filesystem.listdir_complete(label)
+        all_chunks = all_chunks + chunks
+    train_chunks, eval_chunks = train_test_split(all_chunks, test_size=args.eval_size)
     train_dataset = GenerativeDataset()
 
     # main loop

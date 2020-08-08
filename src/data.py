@@ -10,17 +10,8 @@ class GenerativeDataset(Dataset):
     to train it, the GenerativeDataset selects audio chunks from the specified
     directories and returns (audio, audio) pairs for an unsupervised training.
     """
-    def __init__(self, directories):
-        self.dirs = directories
-        self.files = []
-        # concatenate all chunk files
-        # note that it is independent of the
-        # class of each chunk sinc we are creating
-        # a generative dataset
-        for path in self.dirs:
-            chunks = filesystem.listdir_complete(path)
-            self.files = self.files ++ chunks
-
+    def __init__(self, chunks):
+        self.files = chunks
 
     def __len__(self):
         return len(self.files)
@@ -39,16 +30,10 @@ class DiscriminativeDataset(Dataset):
     encoding, the encoding is independent on the dataset and must be
     specified by a user-specific label encoder/decoder.
     """
-    def __init__(self, directories, encoder):
-        self.dirs = directories
-        self.files = []
-        self.labels = []
+    def __init__(self, files, labels):
+        self.files = files
+        self.labels = labels
         self.encoder = encoder
-        for path in self.dirs:
-            chunks = filesystem.listdir_complete(path)
-            self.files = self.files ++ chunks
-            self.labels = self.labels ++ ([path] * len(chunks))
-
 
     def __len__(self):
         return len(self.files)
