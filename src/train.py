@@ -36,7 +36,11 @@ def train_autoencoder(device, args):
         all_chunks = all_chunks + chunks
     train_chunks, eval_chunks = train_test_split(all_chunks, test_size=args.eval_size)
     train_dataset = GenerativeDataset(train_chunks)
-    train_dataset = GenerativeDataset(eval_chunks)
+    eval_dataset = GenerativeDataset(eval_chunks)
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
+                                num_workers=4, collate_fn=None,pin_memory=True)
+    train_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
+                                num_workers=4, collate_fn=None,pin_memory=True)
 
 
     # main loop
