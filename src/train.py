@@ -1,6 +1,7 @@
 from model import FeatureExtractor, train_step, eval_step
 from utils import filesystem
 from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
 import torch
@@ -34,7 +35,9 @@ def train_autoencoder(device, args):
         chunks = filesystem.listdir_complete(label)
         all_chunks = all_chunks + chunks
     train_chunks, eval_chunks = train_test_split(all_chunks, test_size=args.eval_size)
-    train_dataset = GenerativeDataset()
+    train_dataset = GenerativeDataset(train_chunks)
+    train_dataset = GenerativeDataset(eval_chunks)
+
 
     # main loop
     optimizer = optim.SGD()
