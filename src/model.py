@@ -36,12 +36,12 @@ class FeatureExtractor(nn.Module):
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(32),
                         nn.ReLU(inplace=True),
-                        nn.MaxPool1d(kernel_size=3, padding=0),
+                        nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=32, out_channels=16,
                             kernel_size=3, stride=1,  padding=0),
                         nn.BatchNorm1d(16),
                         nn.ReLU(inplace=True),
-                        nn.MaxPool1d(kernel_size=3, padding=0),
+                        nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=1,
                             kernel_size=3, stride=1, padding=0)
                         )
