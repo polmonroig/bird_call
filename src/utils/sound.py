@@ -44,4 +44,4 @@ def empty_chunk(audio_chunk):
     audio_chunk: the chunk to analize
 
     """
-    return False 
+    return False

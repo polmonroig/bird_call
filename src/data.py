@@ -17,9 +17,9 @@ class GenerativeDataset(Dataset):
         return len(self.files)
 
     def __getitem__(self, item):
-        data = sound.load_audio(item, mono=False)
+        data = sound.load_audio(self.files[item], mono=False)
 
-        return data, data
+        return data[0][0], data
 
 
 class DiscriminativeDataset(Dataset):
