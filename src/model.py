@@ -78,6 +78,8 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         data, labels = data
         data = data.to(device).reshape(data.shape[0], 1, -1)
         out = model(data)
+        print('Out shape:', out.shape)
+        print('Data shape:', data.shape)
         loss = loss_criterion(out, data)
         loss.backward()
         optimizer.step()
