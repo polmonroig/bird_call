@@ -38,7 +38,7 @@ def train_autoencoder(device, args):
         all_chunks = all_chunks + chunks
     train_chunks, eval_chunks = train_test_split(all_chunks, test_size=args.eval_size)
     # transforms and dataset
-    trf = None 
+    trf = None
 
     train_dataset = GenerativeDataset(train_chunks, transforms=trf)
     eval_dataset = GenerativeDataset(eval_chunks, transforms=trf)
@@ -48,7 +48,7 @@ def train_autoencoder(device, args):
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     # main loop
-    optimizer = optim.SGD(model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
     loss_criterion = nn.MSELoss()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)

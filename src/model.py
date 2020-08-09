@@ -102,7 +102,7 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         loss.backward()
         optimizer.step()
         if i % verbose_epochs == 0:
-            print('Loss:', loss)
+            print('Train Loss:', loss.item())
 
 
 
@@ -110,8 +110,8 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
     model.eval()
     for i, data in enumerate(data_loader):
         data, labels = data
-        data = data.to(device)
+        data = data.to(device).reshape(data.shape[0], 1, -1)
         out = model(data)
         loss = loss_criterion(out, data)
         if i % verbose_epochs == 0:
-            print('Loss:', loss)
+            print('Eval Loss:', loss.item())
