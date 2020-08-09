@@ -10,6 +10,7 @@ import torch.nn as nn
 import torch
 import wandb
 import argparse
+import os
 
 def get_parser():
     parser = argparse.ArgumentParser(description='Train the neural network')
@@ -22,7 +23,10 @@ def get_parser():
 
 
 def wandb_parameter_register(args):
-    pass
+    wandb.init(project='bird_call')
+    wandb.config.n_epochs = args.n_epochs
+    wandb.config.batch_size = args.batch_size
+    wandb.config.learning_rate = args.lr  
 
 def train_autoencoder(device, args):
     # model definition
@@ -55,7 +59,7 @@ def train_autoencoder(device, args):
         print('Epoch:', epoch, '/', args.n_epochs)
         train_step(model, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
         eval_step(model, eval_dataloader, loss_criterion, args.verbose_epochs, device)
-        torch.save(model.state_dict(), '../models/model_checkpoint.pt')
+        torch.save(model.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
 
 def train_classifier(device, args):
     raise NotImplementedError()
