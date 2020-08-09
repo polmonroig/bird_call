@@ -2,6 +2,7 @@ from model import FeatureExtractor, train_step, eval_step
 from data import GenerativeDataset
 from utils import filesystem
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
 from torchvision import transforms
 import torch.optim as optim
@@ -38,13 +39,13 @@ def train_autoencoder(device, args):
         all_chunks = all_chunks + chunks
     train_chunks, eval_chunks = train_test_split(all_chunks, test_size=args.eval_size)
     # transforms and dataset
-    trf = None
+    trf = normalize
 
     train_dataset = GenerativeDataset(train_chunks, transforms=trf)
     eval_dataset = GenerativeDataset(eval_chunks, transforms=trf)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-    eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
+    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     # main loop
@@ -54,7 +55,7 @@ def train_autoencoder(device, args):
         print('Epoch:', epoch, '/', args.n_epochs)
         train_step(model, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
         eval_step(model, eval_dataloader, loss_criterion, args.verbose_epochs, device)
-
+        torch.save(model.state_dict(), '../models/model_checkpoint.pt')
 
 def train_classifier(device, args):
     raise NotImplementedError()

@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 from utils import filesystem, sound
+import torch
 import csv
 import os
 
@@ -21,9 +22,9 @@ class GenerativeDataset(Dataset):
         data = sound.load_audio(self.files[item], mono=False)
         data = data[0][0]
         if self.transforms:
-            data = self.transforms(data)
+            data = torch.from_numpy(self.transforms(data.reshape(1, -1))).float() 
 
-        return data, data 
+        return data, data
 
 
 class DiscriminativeDataset(Dataset):

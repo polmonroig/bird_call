@@ -14,6 +14,20 @@ def get_parser():
 
     return parser
 
+def generate_chunks(sample_class, chunk_size, min_chunk_size):
+
+    print('Selecting class', sample_class)
+    audio_files = filesystem.listdir_complete(sample_class)
+    class_name = sample_class.split('/')[-1]
+    print('Total audio files', len(audio_files))
+    audio_index = 0
+    for audio in audio_files:
+        sample_audio = sound.load_audio(audio)
+        sample_rate = sample_audio[1]
+        sample_audio = sound.divide_into_chunks(sample_audio[0], chunk_size, min_chunk_size)
+        filesystem.save_chunks(sample_audio, class_name, audio_index)
+        audio_index += len(sample_audio)
+
 def main():
     """
     Prepares the data for training, this includes:
@@ -25,30 +39,15 @@ def main():
     print('Initializing data preparation...')
     parser = get_parser()
     args = parser.parse_args()
-    chunk_size = args.chunk_size
-    min_chunk_size = args.min_chunk_size
 
     print('Generating labels encodings...')
     LabelsEncoder.generate_encoding(filesystem.labels_encoding_file)
 
     print('Creating audio chunks...')
     audio_directories = filesystem.train_audio_files
-    sample_class = audio_directories[0]
-    print('Selecting class', sample_class)
-    audio_files = filesystem.listdir_complete(sample_class)
-    class_name = sample_class.split('/')[-1]
-    print('Total audio files', len(audio_files))
-    audio_index = 0
-    for audio in audio_files:
-        print('Loading file:', audio)
-        sample_audio = sound.load_audio(audio)
-        sample_rate = sample_audio[1]
-        print('Waveform length:', len(sample_audio[0]))
-        print('Waveform sample rate:', sample_audio[1])
-        sample_audio = sound.divide_into_chunks(sample_audio[0], chunk_size, min_chunk_size)
-        print('Total chunks created:', len(sample_audio))
-        filesystem.save_chunks(sample_audio, class_name, audio_index)
-        audio_index += len(sample_audio)
+    for audio_dir in audio_directories:
+        generate_chunks(audio_dir, args.chunk_size, args.min_chunk_size)
+
 
 
 if __name__ == '__main__':
