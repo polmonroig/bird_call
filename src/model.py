@@ -19,33 +19,33 @@ class FeatureExtractor(nn.Module):
         self.encoder = nn.ModuleList(
                     [
                         nn.Conv1d(in_channels=1, out_channels=16,
-                            kernel_size=3, stride=1, padding=0),
+                            kernel_size=3, stride=1, padding=1),
                         nn.BatchNorm1d(16),
                         nn.ReLU(inplace=True),
                         nn.MaxPool1d(kernel_size=3, padding=0, return_indices=True),
                         nn.Conv1d(in_channels=16, out_channels=32,
-                            kernel_size=3, stride=1, padding=0),
+                            kernel_size=3, stride=1, padding=1),
                         nn.BatchNorm1d(32),
                         nn.ReLU(inplace=True),
                         nn.MaxPool1d(kernel_size=3, padding=0, return_indices=True),
                         nn.Conv1d(in_channels=32, out_channels=64,
-                            kernel_size=3, stride=1, padding=0),
+                            kernel_size=3, stride=1, padding=1),
                         nn.ReLU(inplace=True)
                         ]
                         )
         self.decoder = nn.ModuleList([
                         nn.Conv1d(in_channels=64, out_channels=32,
-                            kernel_size=3, stride=1, padding=0),
+                            kernel_size=3, stride=1, padding=1),
                         nn.BatchNorm1d(32),
                         nn.ReLU(inplace=True),
                         nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=32, out_channels=16,
-                            kernel_size=3, stride=1,  padding=0),
+                            kernel_size=3, stride=1,  padding=1),
                         nn.BatchNorm1d(16),
                         nn.ReLU(inplace=True),
                         nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=1,
-                            kernel_size=3, stride=1, padding=0)
+                            kernel_size=3, stride=1, padding=1)
                             ]
                         )
 
