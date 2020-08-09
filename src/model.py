@@ -16,7 +16,7 @@ class FeatureExtractor(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.encoder = [
+        self.encoder = nn.ModuleList(
                         nn.Conv1d(in_channels=1, out_channels=16,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(16),
@@ -30,8 +30,8 @@ class FeatureExtractor(nn.Module):
                         nn.Conv1d(in_channels=32, out_channels=64,
                             kernel_size=3, stride=1, padding=0),
                         nn.ReLU(inplace=True),
-                        ]
-        self.decoder = [
+                        )
+        self.decoder = nn.ModuleList(
                         nn.Conv1d(in_channels=64, out_channels=32,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(32),
@@ -44,7 +44,7 @@ class FeatureExtractor(nn.Module):
                         nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=1,
                             kernel_size=3, stride=1, padding=0)
-                        ]
+                        )
 
         self.indices = []
 
@@ -65,7 +65,7 @@ class FeatureExtractor(nn.Module):
         for layer in self.decoder():
             if isinstance(layer, nn.MaxPool1d):
                 x = layer(x, self.indices[index])
-                index += 1 
+                index += 1
             else:
                 x = layer(x)
         return x
