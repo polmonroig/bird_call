@@ -16,22 +16,22 @@ class FeatureExtractor(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.encoder = nn.Sequential(
+        self.encoder = [
                         nn.Conv1d(in_channels=1, out_channels=16,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(16),
                         nn.ReLU(inplace=True),
-                        nn.MaxPool1d(kernel_size=3, padding=0),
+                        nn.MaxPool1d(kernel_size=3, padding=0, return_indices=True),
                         nn.Conv1d(in_channels=16, out_channels=32,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(32),
                         nn.ReLU(inplace=True),
-                        nn.MaxPool1d(kernel_size=3, padding=0),
+                        nn.MaxPool1d(kernel_size=3, padding=0, return_indices=True),
                         nn.Conv1d(in_channels=32, out_channels=64,
                             kernel_size=3, stride=1, padding=0),
                         nn.ReLU(inplace=True),
-                        )
-        self.decoder = nn.Sequential(
+                        ]
+        self.decoder = [
                         nn.Conv1d(in_channels=64, out_channels=32,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(32),
@@ -44,14 +44,31 @@ class FeatureExtractor(nn.Module):
                         nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=1,
                             kernel_size=3, stride=1, padding=0)
-                        )
+                        ]
+
+        self.indices = []
 
 
     def encode(self, x):
-        return self.encoder(x)
+        self.indices = []
+        for layer in self.encoder():
+            if isinstance(layer, nn.MaxPool1d):
+                x, ind = layer(x)
+                self.indices.append(ind)
+            else:
+                x = layer(x)
+
+        return x
 
     def decode(self, x):
-        return self.decoder(x)
+        index = 0
+        for layer in self.decoder():
+            if isinstance(layer, nn.MaxPool1d):
+                x = layer(x, self.indices[index])
+                index += 1 
+            else:
+                x = layer(x)
+        return x
 
     def forward(self, x):
         return self.decode(self.encode(x))
