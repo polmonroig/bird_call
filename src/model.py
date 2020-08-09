@@ -17,6 +17,7 @@ class FeatureExtractor(nn.Module):
     def __init__(self):
         super().__init__()
         self.encoder = nn.ModuleList(
+                    [
                         nn.Conv1d(in_channels=1, out_channels=16,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(16),
@@ -29,9 +30,10 @@ class FeatureExtractor(nn.Module):
                         nn.MaxPool1d(kernel_size=3, padding=0, return_indices=True),
                         nn.Conv1d(in_channels=32, out_channels=64,
                             kernel_size=3, stride=1, padding=0),
-                        nn.ReLU(inplace=True),
+                        nn.ReLU(inplace=True)
+                        ]
                         )
-        self.decoder = nn.ModuleList(
+        self.decoder = nn.ModuleList([
                         nn.Conv1d(in_channels=64, out_channels=32,
                             kernel_size=3, stride=1, padding=0),
                         nn.BatchNorm1d(32),
@@ -44,6 +46,7 @@ class FeatureExtractor(nn.Module):
                         nn.MaxUnpool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=1,
                             kernel_size=3, stride=1, padding=0)
+                            ]
                         )
 
         self.indices = []
@@ -51,7 +54,7 @@ class FeatureExtractor(nn.Module):
 
     def encode(self, x):
         self.indices = []
-        for layer in self.encoder():
+        for layer in self.encoder:
             if isinstance(layer, nn.MaxPool1d):
                 x, ind = layer(x)
                 self.indices.append(ind)
@@ -61,11 +64,11 @@ class FeatureExtractor(nn.Module):
         return x
 
     def decode(self, x):
-        index = 0
-        for layer in self.decoder():
-            if isinstance(layer, nn.MaxPool1d):
+        index = len(self.indices) - 1
+        for layer in self.decoder:
+            if isinstance(layer, nn.MaxUnpool1d):
                 x = layer(x, self.indices[index])
-                index += 1
+                index -= 1
             else:
                 x = layer(x)
         return x
@@ -95,8 +98,6 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         data, labels = data
         data = data.to(device).reshape(data.shape[0], 1, -1)
         out = model(data)
-        print('Out shape:', out.shape)
-        print('Data shape:', data.shape)
         loss = loss_criterion(out, data)
         loss.backward()
         optimizer.step()

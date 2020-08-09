@@ -10,16 +10,20 @@ class GenerativeDataset(Dataset):
     to train it, the GenerativeDataset selects audio chunks from the specified
     directories and returns (audio, audio) pairs for an unsupervised training.
     """
-    def __init__(self, chunks):
+    def __init__(self, chunks, transforms=None):
         self.files = chunks
+        self.transforms = transforms
 
     def __len__(self):
         return len(self.files)
 
     def __getitem__(self, item):
         data = sound.load_audio(self.files[item], mono=False)
+        data = data[0][0]
+        if self.transforms:
+            data = self.transforms(data)
 
-        return data[0][0], data
+        return data, data 
 
 
 class DiscriminativeDataset(Dataset):
