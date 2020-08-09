@@ -29,7 +29,7 @@ def divide_into_chunks(audio, chunk_size, min_size, sample_rate=44100):
     """
     chunks = torch.split(audio, int(chunk_size * sample_rate))
     last_chunk_duration = len(chunks[-1]) / sample_rate
-    if last_chunk_duration >= min_size:
+    if last_chunk_duration < min_size:
         return chunks[:-1]
     else:
         return chunks

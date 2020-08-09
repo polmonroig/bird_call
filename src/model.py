@@ -24,7 +24,7 @@ class FeatureExtractor(nn.Module):
                         nn.MaxPool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=32,
                             kernel_size=3, stride=1, padding=0),
-                        nn.BatchNorm1d(16),
+                        nn.BatchNorm1d(32),
                         nn.ReLU(inplace=True),
                         nn.MaxPool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=32, out_channels=64,
@@ -34,14 +34,14 @@ class FeatureExtractor(nn.Module):
         self.decoder = nn.Sequential(
                         nn.Conv1d(in_channels=64, out_channels=32,
                             kernel_size=3, stride=1, padding=0),
-                        nn.BatchNorm1d(16),
+                        nn.BatchNorm1d(32),
                         nn.ReLU(inplace=True),
                         nn.MaxPool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=32, out_channels=16,
                             kernel_size=3, stride=1,  padding=0),
                         nn.BatchNorm1d(16),
                         nn.ReLU(inplace=True),
-                        nn.MaxPool1d(kernel_size=3, padding=0), 
+                        nn.MaxPool1d(kernel_size=3, padding=0),
                         nn.Conv1d(in_channels=16, out_channels=1,
                             kernel_size=3, stride=1, padding=0)
                         )
@@ -76,7 +76,7 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
     for i, data in enumerate(data_loader):
         optimizer.zero_grad()
         data, labels = data
-        data = data.to(device)
+        data = data.to(device).reshape(data.shape[0], 1, -1)
         out = model(data)
         loss = loss_criterion(out, data)
         loss.backward()
