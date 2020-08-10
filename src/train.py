@@ -19,6 +19,7 @@ def get_parser():
     parser.add_argument('--verbose_epochs', type=int, help='Number of epochs per training verbose output')
     parser.add_argument('--lr', type=float, help='Learning rate of the optimizer')
     parser.add_argument('--eval_size', type=float, help='Evaluation dataset percentage')
+    parser.add_argument('--encoder_path', type=str, help='Path to feature extractor model state dict')
     return parser
 
 
@@ -26,7 +27,7 @@ def wandb_parameter_register(args):
     wandb.init(project='bird_call')
     wandb.config.n_epochs = args.n_epochs
     wandb.config.batch_size = args.batch_size
-    wandb.config.learning_rate = args.lr  
+    wandb.config.learning_rate = args.lr
 
 def train_autoencoder(device, args):
     # model definition
@@ -53,7 +54,7 @@ def train_autoencoder(device, args):
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     # main loop
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.SGD(model.parameters(), lr=args.lr)
     loss_criterion = nn.MSELoss()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
@@ -62,7 +63,35 @@ def train_autoencoder(device, args):
         torch.save(model.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
 
 def train_classifier(device, args):
-    raise NotImplementedError()
+    encoder = FeatureExtractor()
+    encoder.load_state_dict(torch.load(args.encoder_path))
+    encoder.eval()
+    classifer = Classifier(encoder)
+    all_chunks = []
+    all_labels = []
+    for label in filesystem.listdir_complete(filesystem.train_audio_chunks_dir):
+        chunks = filesystem.listdir_complete(label)
+        all_chunks = all_chunks + chunks
+        all_labels = all_labels + label 
+    train_chunks, eval_chunks, train_labels, eval_labels = train_test_split(all_chunks, all_labels, test_size=args.eval_size)
+
+    # transforms and dataset
+    trf = normalize
+    train_dataset = DiscriminativeDataset(transforms=trf)
+    eval_dataset = DiscriminativeDataset(transforms=trf)
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
+                                num_workers=4, collate_fn=None,pin_memory=True)
+    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
+                                num_workers=4, collate_fn=None,pin_memory=True)
+
+    optimizer = optim.SGD(classifier·parameters(), lr=args.lr)
+    loss_criterion = nn.Softmax()
+    for epoch in range(args.n_epochs):
+        print('Epoch:', epoch, '/', args.n_epochs)
+        train_step(classifer, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
+        eval_step(classifer, eval_dataloader, loss_criterion, args.verbose_epochs, device)
+        torch.save(classifer.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
+
 
 def main():
     print('Initializing model training...')
@@ -76,8 +105,8 @@ def main():
         print('Running on cpu')
 
     wandb_parameter_register(args)
-    train_autoencoder(device, args)
-    #train_classifier(device, args)
+    #train_autoencoder(device, args)
+    train_classifier(device, args)
 
 if __name__ == '__main__':
     main()

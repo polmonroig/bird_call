@@ -22,7 +22,7 @@ class GenerativeDataset(Dataset):
         data = sound.load_audio(self.files[item], mono=False)
         data = data[0][0]
         if self.transforms:
-            data = torch.from_numpy(self.transforms(data.reshape(1, -1))).float() 
+            data = torch.from_numpy(self.transforms(data.reshape(1, -1))).float()
 
         return data, data
 
