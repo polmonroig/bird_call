@@ -35,7 +35,7 @@ class DiscriminativeDataset(Dataset):
     encoding, the encoding is independent on the dataset and must be
     specified by a user-specific label encoder/decoder.
     """
-    def __init__(self, files, labels, transforms):
+    def __init__(self, files, labels, encoder, transforms):
         self.files = files
         self.labels = labels
         self.encoder = encoder
@@ -45,7 +45,7 @@ class DiscriminativeDataset(Dataset):
         return len(self.files)
 
     def __getitem__(self, item):
-        data = sound.load_audio(item, mono=False)
+        data = sound.load_audio(self.files[item], mono=False)
         labels = self.encoder.encode(self.labels[item])
         if self.transforms:
             data = torch.from_numpy(self.transforms(data.reshape(1, -1))).float()
@@ -77,6 +77,7 @@ class LabelsEncoder:
 
         with open(path, 'w', newline='') as f:
             writer = csv.writer(f)
+            writer.writerow(['code', 'id'])
             for i, label in enumerate(labels):
                 writer.writerow([label, i])
 

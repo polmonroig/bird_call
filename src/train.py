@@ -1,10 +1,11 @@
-from model import FeatureExtractor, train_step, eval_step
-from data import GenerativeDataset
+from model import FeatureExtractor, train_step, eval_step, Classifier
+from data import GenerativeDataset, DiscriminativeDataset, LabelsEncoder
 from utils import filesystem
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
 from torchvision import transforms
+import pandas as pd
 import torch.optim as optim
 import torch.nn as nn
 import torch
@@ -66,31 +67,34 @@ def train_classifier(device, args):
     encoder = FeatureExtractor()
     encoder.load_state_dict(torch.load(args.encoder_path))
     encoder.eval()
-    classifer = Classifier(encoder)
+    classifier = Classifier(encoder)
     all_chunks = []
     all_labels = []
     for label in filesystem.listdir_complete(filesystem.train_audio_chunks_dir):
         chunks = filesystem.listdir_complete(label)
         all_chunks = all_chunks + chunks
-        all_labels = all_labels + label 
+        all_labels = all_labels + [label] * len(chunks)
+    print(all_labels)
     train_chunks, eval_chunks, train_labels, eval_labels = train_test_split(all_chunks, all_labels, test_size=args.eval_size)
 
     # transforms and dataset
     trf = normalize
-    train_dataset = DiscriminativeDataset(transforms=trf)
-    eval_dataset = DiscriminativeDataset(transforms=trf)
+    # dataset generation
+    labels_encoder = LabelsEncoder(pd.read_csv(filesystem.labels_encoding_file))
+    train_dataset = DiscriminativeDataset(train_chunks, train_labels, labels_encoder, transforms=trf)
+    eval_dataset = DiscriminativeDataset(eval_chunks, eval_labels, labels_encoder, transforms=trf)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
-    optimizer = optim.SGD(classifier·parameters(), lr=args.lr)
+    optimizer = optim.SGD(classifier.parameters(), lr=args.lr)
     loss_criterion = nn.Softmax()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
-        train_step(classifer, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
-        eval_step(classifer, eval_dataloader, loss_criterion, args.verbose_epochs, device)
-        torch.save(classifer.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
+        train_step(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
+        eval_step(classifier, eval_dataloader, loss_criterion, args.verbose_epochs, device)
+        torch.save(classifier.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
 
 
 def main():
@@ -104,7 +108,7 @@ def main():
     else:
         print('Running on cpu')
 
-    wandb_parameter_register(args)
+    #wandb_parameter_register(args)
     #train_autoencoder(device, args)
     train_classifier(device, args)
 

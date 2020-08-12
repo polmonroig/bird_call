@@ -44,9 +44,9 @@ def main():
     LabelsEncoder.generate_encoding(filesystem.labels_encoding_file)
 
     print('Creating audio chunks...')
-    audio_directories = filesystem.train_audio_files
-    for audio_dir in audio_directories:
-        generate_chunks(audio_dir, args.chunk_size, args.min_chunk_size)
+    #audio_directories = filesystem.train_audio_files
+    #for audio_dir in audio_directories:
+    #    generate_chunks(audio_dir, args.chunk_size, args.min_chunk_size)
 
 
 
