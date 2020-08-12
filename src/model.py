@@ -91,8 +91,10 @@ class Classifier(nn.Module):
         self.encoder = encoder
         self.total_labels = 264
         self.layers = nn.ModuleList([
-            nn.AdaptiveMaxPool1d(1000), 
-            nn.Linear(1000, 264)
+            nn.AdaptiveMaxPool1d(1000),
+            nn.ReLU(inplace=True),
+            nn.Linear(1000, 264),
+            nn.Sigmoid(),
         ])
 
 
