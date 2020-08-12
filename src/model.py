@@ -89,10 +89,15 @@ class Classifier(nn.Module):
     def __init__(self, encoder):
         super().__init__()
         self.encoder = encoder
+        self.total_labels = 264
+        self.layers = nn.ModuleList([
+            nn.AdaptiveMaxPool1d(1000), 
+            nn.Linear(1000, 264)
+        ])
 
 
     def forward(self, x):
-        x = self.encoder.encode(x) # feature extraction  
+        x = self.encoder.encode(x) # feature extraction
         for layer in self.layers:
             x = layer(x)
         return x
