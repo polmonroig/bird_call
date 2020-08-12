@@ -94,7 +94,7 @@ class Classifier(nn.Module):
             nn.AdaptiveMaxPool1d(1000),
             nn.ReLU(inplace=True),
             nn.Linear(1000, 264),
-            nn.Sigmoid(),
+            nn.Softmax(),
         ])
 
 

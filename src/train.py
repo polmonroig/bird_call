@@ -68,13 +68,13 @@ def train_classifier(device, args):
     encoder.load_state_dict(torch.load(args.encoder_path))
     encoder.eval()
     classifier = Classifier(encoder)
+    classifier.to(device)
     all_chunks = []
     all_labels = []
     for label in filesystem.listdir_complete(filesystem.train_audio_chunks_dir):
         chunks = filesystem.listdir_complete(label)
         all_chunks = all_chunks + chunks
-        all_labels = all_labels + [label] * len(chunks)
-    print(all_labels)
+        all_labels = all_labels + [label.split('/')[-1]] * len(chunks)
     train_chunks, eval_chunks, train_labels, eval_labels = train_test_split(all_chunks, all_labels, test_size=args.eval_size)
 
     # transforms and dataset
@@ -89,7 +89,7 @@ def train_classifier(device, args):
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     optimizer = optim.SGD(classifier.parameters(), lr=args.lr)
-    loss_criterion = nn.Softmax()
+    loss_criterion = nn.CrossEntropyLoss()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
         train_step(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)

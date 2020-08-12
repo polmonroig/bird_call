@@ -45,7 +45,7 @@ class DiscriminativeDataset(Dataset):
         return len(self.files)
 
     def __getitem__(self, item):
-        data = sound.load_audio(self.files[item], mono=False)
+        data = sound.load_audio(self.files[item], mono=False)[0][0]
         labels = self.encoder.encode(self.labels[item])
         if self.transforms:
             data = torch.from_numpy(self.transforms(data.reshape(1, -1))).float()
@@ -66,9 +66,9 @@ class LabelsEncoder:
     def __init__(self, encodings):
         self.encoder = {}
         self.decoder = {}
-        for code in encodings:
-            self.encoder[code[0]] = code[1]
-            self.decoder[code[1]] = code[0]
+        for index, row in encodings.iterrows():
+            self.encoder[row['code']] = row['id']
+            self.decoder[row['id']] = row['code']
 
     @staticmethod
     def generate_encoding(path):
