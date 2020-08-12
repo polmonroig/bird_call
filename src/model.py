@@ -115,7 +115,7 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         print(data.shape)
         out = model(data)
 
-        loss = loss_criterion(out, data)
+        loss = loss_criterion(out, labels)
         loss.backward()
         optimizer.step()
         if i % verbose_epochs == 0:
