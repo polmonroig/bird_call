@@ -88,7 +88,7 @@ def train_classifier(device, args):
     eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
-    optimizer = optim.SGD(classifier.parameters(), lr=args.lr)
+    optimizer = optim.Adam(classifier.parameters(), lr=args.lr)
     loss_criterion = nn.CrossEntropyLoss()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
@@ -108,7 +108,7 @@ def main():
     else:
         print('Running on cpu')
 
-    #wandb_parameter_register(args)
+    wandb_parameter_register(args)
     #train_autoencoder(device, args)
     train_classifier(device, args)
 

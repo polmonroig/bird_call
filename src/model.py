@@ -114,11 +114,9 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         optimizer.zero_grad()
         data, labels = data
         data = data.to(device).reshape(data.shape[0], 1, -1)
-        labels = labels.to(device).float()
+        labels = labels.to(device)
         out = model(data)
-        print(labels.shape)
-        print(out.shape)
-        loss = loss_criterion(out, labels)
+        loss = loss_criterion(out, labels.long())
         loss.backward()
         optimizer.step()
         if i % verbose_epochs == 0:
@@ -134,7 +132,7 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
         data = data.to(device).reshape(data.shape[0], 1, -1)
         labels = labels.to(device)
         out = model(data)
-        loss = loss_criterion(out, labels)
+        loss = loss_criterion(out, labels.long())
         if i % verbose_epochs == 0:
             print('Eval Loss:', loss.item())
             wandb.log({'Eval Loss' : loss.item()})

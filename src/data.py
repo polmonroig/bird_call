@@ -46,9 +46,7 @@ class DiscriminativeDataset(Dataset):
 
     def __getitem__(self, item):
         data = sound.load_audio(self.files[item], mono=False)[0][0]
-        labels = torch.zeros(264)
-        true_label = self.encoder.encode(self.labels[item])
-        labels[true_label] = 1.0
+        labels = self.encoder.encode(self.labels[item])
         if self.transforms:
             data = torch.from_numpy(self.transforms(data.reshape(1, -1))).float()
 
