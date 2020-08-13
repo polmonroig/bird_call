@@ -1,3 +1,4 @@
+from sklearn.metrics import accuracy_score, f1_score
 import torch.nn as nn
 import torch
 import wandb
@@ -106,9 +107,13 @@ class Classifier(nn.Module):
             x = layer(x)
         return x.reshape(x.shape[0], -1)
 
+def to_cpu(t):
+    return t.cpu().detach().numpy()
 
+def parsed_labels_output(labels):
+    pass
 
-def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
+def train_step_classification(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
     model.train()
     for i, data in enumerate(data_loader):
         optimizer.zero_grad()
@@ -121,11 +126,14 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         optimizer.step()
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
+            #labels = parsed_labels_output(labels)
+            #a = accuracy_score(to_cpu(labels), to_cpu(out))
+            #print('Train accuracy:', a)
             wandb.log({'Train Loss' : loss.item()})
 
 
 
-def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
+def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs, device):
     model.eval()
     for i, data in enumerate(data_loader):
         data, labels = data
@@ -136,3 +144,31 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
         if i % verbose_epochs == 0:
             print('Eval Loss:', loss.item())
             wandb.log({'Eval Loss' : loss.item()})
+
+
+def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
+    model.train()
+    for i, data in enumerate(data_loader):
+        optimizer.zero_grad()
+        data, labels = data
+        data = data.to(device).reshape(data.shape[0], 1, -1)
+        out = model(data)
+        loss = loss_criterion(out, data)
+        loss.backward()
+        optimizer.step()
+        if i % verbose_epochs == 0:
+            print('Train Loss:', loss.item())
+            wandb.log{'Train Loss:', loss.item()}
+
+
+
+def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
+    model.eval()
+    for i, data in enumerate(data_loader):
+        data, labels = data
+        data = data.to(device).reshape(data.shape[0], 1, -1)
+        out = model(data)
+        loss = loss_criterion(out, data)
+        if i % verbose_epochs == 0:
+            print('Eval Loss:', loss.item())
+            wandb.log{'Eval Loss:', loss.item()}

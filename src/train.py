@@ -92,8 +92,8 @@ def train_classifier(device, args):
     loss_criterion = nn.CrossEntropyLoss()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
-        train_step(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
-        eval_step(classifier, eval_dataloader, loss_criterion, args.verbose_epochs, device)
+        train_step_classification(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
+        eval_step_classification(classifier, eval_dataloader, loss_criterion, args.verbose_epochs, device)
         torch.save(classifier.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
 
 
