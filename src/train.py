@@ -1,4 +1,4 @@
-from model import FeatureExtractor, train_step, eval_step, Classifier
+from model import FeatureExtractor, train_step, train_step_classification, eval_step, eval_step_classification, Classifier
 from data import GenerativeDataset, DiscriminativeDataset, LabelsEncoder
 from utils import filesystem
 from sklearn.model_selection import train_test_split
