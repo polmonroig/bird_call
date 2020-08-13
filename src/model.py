@@ -158,7 +158,7 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         optimizer.step()
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
-            wandb.log{'Train Loss:', loss.item()}
+            wandb.log({'Train Loss:', loss.item()})
 
 
 
@@ -171,4 +171,4 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
         loss = loss_criterion(out, data)
         if i % verbose_epochs == 0:
             print('Eval Loss:', loss.item())
-            wandb.log{'Eval Loss:', loss.item()}
+            wandb.log({'Eval Loss:', loss.item()})
