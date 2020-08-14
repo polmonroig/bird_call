@@ -4,6 +4,11 @@ import torch
 import wandb
 
 
+def xavier_init(layer):
+    if isinstance(layer, nn.Conv1d) or isinstance(layer, nn.Linear):
+        nn.init.xavier_uniform_(layer.weight)
+        layer.bias.data.fill_(0.01)
+
 class FeatureExtractor(nn.Module):
     """
     The FeatureExtractor is an autoencoder model that works by learning
@@ -87,7 +92,7 @@ class Classifier(nn.Module):
     An aribrary encoder must be provide that is compatible with the
     classification layers.
     """
-    def __init__(self, encoder):
+    def __init__(self, encoder, w_init=xavier_init):
         super().__init__()
         self.encoder = encoder
         self.total_labels = 264
@@ -99,6 +104,8 @@ class Classifier(nn.Module):
             nn.Linear(1000, 264),
             nn.Softmax(),
         ])
+        for layer in self.layers:
+            w_init(layer)
 
 
     def forward(self, x):
@@ -126,6 +133,7 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
         optimizer.step()
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
+            print(out[0].max())
             #labels = parsed_labels_output(labels)
             #a = accuracy_score(to_cpu(labels), to_cpu(out))
             #print('Train accuracy:', a)
