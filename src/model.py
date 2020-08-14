@@ -143,10 +143,10 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
             one_hot_labels = to_cpu(one_hot_labels)
             out = to_cpu(out)
             a = accuracy_score(one_hot_labels, out)
-            f1 = f1_score(one_hot_labels, out, average='micro')
+            f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
             print('Train accuracy:', a)
             print('F1 score:', f1)
-            wandb.log({'Train Loss' : loss.item()})
+            wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a, 'F1  score' : f1})
 
 
 
@@ -160,7 +160,20 @@ def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs,
         loss = loss_criterion(out, labels.long())
         if i % verbose_epochs == 0:
             print('Eval Loss:', loss.item())
-            wandb.log({'Eval Loss' : loss.item()})
+            one_hot_labels = torch.zeros(out.shape)
+            print(labels.shape)
+            print(out.shape)
+            print(one_hot_labels.shape)
+            for sample, label in zip(one_hot_labels, labels):
+                sample = label
+            out = (out > prediction_threshold)
+            one_hot_labels = to_cpu(one_hot_labels)
+            out = to_cpu(out)
+            a = accuracy_score(one_hot_labels, out)
+            f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
+            print('Eval accuracy:', a)
+            print('Eval F1 score:', f1)
+            wandb.log({'Eval Loss' : loss.item(), 'Eval accuracy': a, 'Eval F1  score' : f1})
 
 
 def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
