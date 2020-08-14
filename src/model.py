@@ -121,7 +121,7 @@ def to_cpu(t):
 
 def train_step_classification(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
     model.train()
-    prediction_threshold = 0.5
+    prediction_threshold = 0.1
     for i, data in enumerate(data_loader):
         optimizer.zero_grad()
         data, labels = data
