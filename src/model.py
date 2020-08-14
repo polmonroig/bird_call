@@ -117,11 +117,11 @@ class Classifier(nn.Module):
 def to_cpu(t):
     return t.cpu().detach().numpy()
 
-def parsed_labels_output(labels):
-    pass
+
 
 def train_step_classification(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
     model.train()
+    prediction_threshold = 0.5
     for i, data in enumerate(data_loader):
         optimizer.zero_grad()
         data, labels = data
@@ -133,10 +133,19 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
         optimizer.step()
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
-            print(out[0].max())
-            #labels = parsed_labels_output(labels)
-            #a = accuracy_score(to_cpu(labels), to_cpu(out))
-            #print('Train accuracy:', a)
+            one_hot_labels = torch.zeros(out.shape)
+            print(labels.shape)
+            print(out.shape)
+            print(one_hot_labels.shape)
+            for sample, label in zip(one_hot_labels, labels):
+                sample = label
+            out = (out > prediction_threshold)
+            one_hot_labels = to_cpu(one_hot_labels)
+            out = to_cpu(out)
+            a = accuracy_score(one_hot_labels, out)
+            f1 = f1_score(one_hot_labels, out, average='micro')
+            print('Train accuracy:', a)
+            print('F1 score:', f1)
             wandb.log({'Train Loss' : loss.item()})
 
 
