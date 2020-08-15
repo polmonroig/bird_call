@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 import torch.nn as nn
 import torch
 import wandb
@@ -146,6 +146,8 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
             f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
             print('Train accuracy:', a)
             print('F1 score:', f1)
+            print('Train Precision score: ', precision_score(one_hot_labels, out, average='micro', zero_division=1))
+            print('Train Recall score: ', recall_score(one_hot_labels, out, average='micro', zero_division=1))
             wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a, 'F1  score' : f1})
 
 
