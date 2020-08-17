@@ -88,7 +88,7 @@ def train_classifier(device, args):
     eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
-    optimizer = optim.SGD(classifier.parameters(), lr=args.lr)
+    optimizer = optim.SGD(classifier.parameters(), lr=args.lr, momentum=0.5)
     loss_criterion = nn.CrossEntropyLoss()
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)

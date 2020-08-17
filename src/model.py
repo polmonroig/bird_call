@@ -114,7 +114,7 @@ class Classifier(nn.Module):
             nn.AdaptiveMaxPool1d(1000),
             nn.ReLU(inplace=True),
             nn.Linear(1000, 264),
-            nn.Softmax(),
+            nn.Softmax(dim=0),
         ])
         for layer in self.layers:
             w_init(layer)
@@ -146,18 +146,21 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
             one_hot_labels = torch.zeros(out.shape)
-            for sample, label in zip(one_hot_labels, labels):
-                sample = label
+            print(one_hot_labels.shape)
+            for i, label in enumerate(labels):
+                one_hot_labels[i][label] = 1.0
             out = (out > prediction_threshold)
             one_hot_labels = to_cpu(one_hot_labels)
+            one_hot_labels.max()
             out = to_cpu(out)
-
+            mat = multilabel_confusion_matrix(one_hot_labels, out)
+            print(mat)
             a = accuracy_score(one_hot_labels, out)
             f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
             print('Train accuracy:', a)
             print('F1 score:', f1)
-            print('Train Precision score: ', precision_score(one_hot_labels, out, average='micro', zero_division=1))
-            print('Train Recall score: ', recall_score(one_hot_labels, out, average='micro', zero_division=1))
+            print('Train Precision score: ', precision_score(one_hot_labels, out, average='micro', zero_division=0))
+            print('Train Recall score: ', recall_score(one_hot_labels, out, average='micro', zero_division=0))
             wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a, 'F1  score' : f1})
 
 
