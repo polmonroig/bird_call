@@ -1,7 +1,10 @@
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import multilabel_confusion_matrix, classification_report
 import torch.nn as nn
+import os
 import torch
 import wandb
+import cv2
 
 
 def xavier_init(layer):
@@ -134,22 +137,21 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
             one_hot_labels = torch.zeros(out.shape)
-            print(labels.shape)
-            print(out.shape)
-            print(one_hot_labels.shape)
             for sample, label in zip(one_hot_labels, labels):
                 sample = label
             out = (out > prediction_threshold)
             one_hot_labels = to_cpu(one_hot_labels)
             out = to_cpu(out)
-            print(classification_report(one_hot_labels, out, zero_division=0)) 
+            confusion_matrix = multilabel_confusion_matrix(one_hot_labels, out)
+            cv2.imwrite(os.path.join(wandb.run.dir, 'confusion_matrix_'+ i +'_.png'), confusion_matrix)
+
             #a = accuracy_score(one_hot_labels, out)
             #f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
             #print('Train accuracy:', a)
             #print('F1 score:', f1)
             #print('Train Precision score: ', precision_score(one_hot_labels, out, average='micro', zero_division=1))
             #print('Train Recall score: ', recall_score(one_hot_labels, out, average='micro', zero_division=1))
-            wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a, 'F1  score' : f1})
+            #wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a, 'F1  score' : f1})
 
 
 
