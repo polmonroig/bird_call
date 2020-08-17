@@ -100,8 +100,17 @@ class Classifier(nn.Module):
         self.encoder = encoder
         self.total_labels = 264
         self.layers = nn.ModuleList([
-            nn.Conv1d(in_channels=64, out_channels=1,
-                kernel_size=3, stride=1, padding=1),
+            nn.Conv1d(in_channels=64, out_channels=32,
+                kernel_size=3, stride=1,  padding=1),
+            nn.BatchNorm1d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(in_channels=32, out_channels=16,
+                kernel_size=3, stride=1,  padding=1),
+            nn.BatchNorm1d(16),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(in_channels=16, out_channels=1,
+                kernel_size=3, stride=1,  padding=1),
+            nn.ReLU(inplace=True),
             nn.AdaptiveMaxPool1d(1000),
             nn.ReLU(inplace=True),
             nn.Linear(1000, 264),
