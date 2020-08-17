@@ -146,7 +146,6 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
         if i % verbose_epochs == 0:
             print('Train Loss:', loss.item())
             one_hot_labels = torch.zeros(out.shape)
-            print(one_hot_labels.shape)
             for i, label in enumerate(labels):
                 one_hot_labels[i][label] = 1.0
             out = (out > prediction_threshold)
@@ -154,19 +153,23 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
             one_hot_labels.max()
             out = to_cpu(out)
             mat = multilabel_confusion_matrix(one_hot_labels, out)
-            print(mat)
             a = accuracy_score(one_hot_labels, out)
             f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
+            p = precision_score(one_hot_labels, out, average='micro', zero_division=0)
+            r = recall_score(one_hot_labels, out, average='micro', zero_division=0)
             print('Train accuracy:', a)
             print('F1 score:', f1)
-            print('Train Precision score: ', precision_score(one_hot_labels, out, average='micro', zero_division=0))
-            print('Train Recall score: ', recall_score(one_hot_labels, out, average='micro', zero_division=0))
-            wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a, 'F1  score' : f1})
+            print('Train Precision score: ', p)
+            print('Train Recall score: ', r)
+            wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a,
+                        'Train F1  score' : f1, 'Train precision' : p,
+                        'Train Recall score:' : r})
 
 
 
 def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs, device):
     model.eval()
+    prediction_threshold = 0.9
     for i, data in enumerate(data_loader):
         data, labels = data
         data = data.to(device).reshape(data.shape[0], 1, -1)
@@ -176,19 +179,24 @@ def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs,
         if i % verbose_epochs == 0:
             print('Eval Loss:', loss.item())
             one_hot_labels = torch.zeros(out.shape)
-            print(labels.shape)
-            print(out.shape)
-            print(one_hot_labels.shape)
-            for sample, label in zip(one_hot_labels, labels):
-                sample = label
+            for i, label in enumerate(labels):
+                one_hot_labels[i][label] = 1.0
             out = (out > prediction_threshold)
             one_hot_labels = to_cpu(one_hot_labels)
+            one_hot_labels.max()
             out = to_cpu(out)
+            mat = multilabel_confusion_matrix(one_hot_labels, out)
             a = accuracy_score(one_hot_labels, out)
             f1 = f1_score(one_hot_labels, out, average='micro', zero_division=0)
+            p = precision_score(one_hot_labels, out, average='micro', zero_division=0)
+            r = recall_score(one_hot_labels, out, average='micro', zero_division=0)
             print('Eval accuracy:', a)
-            print('Eval F1 score:', f1)
-            wandb.log({'Eval Loss' : loss.item(), 'Eval accuracy': a, 'Eval F1  score' : f1})
+            print('F1 score:', f1)
+            print('Eval Precision score: ', p)
+            print('Eval Recall score: ', r)
+            wandb.log({'Eval Loss' : loss.item(), 'Eval accuracy': a,
+                        'Eval F1  score' : f1, 'Eval precision' : p,
+                        'Eval Recall score:' : r})
 
 
 def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
