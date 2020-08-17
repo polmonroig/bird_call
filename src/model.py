@@ -98,7 +98,7 @@ class Classifier(nn.Module):
     def __init__(self, encoder, w_init=xavier_init):
         super().__init__()
         self.encoder = encoder
-        self.total_labels = 264 
+        self.total_labels = 264
         self.layers = nn.ModuleList([
             nn.Conv1d(in_channels=64, out_channels=32,
                 kernel_size=3, stride=1,  padding=1),
@@ -133,7 +133,7 @@ def to_cpu(t):
 
 def train_step_classification(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
     model.train()
-    prediction_threshold = 0.1
+    prediction_threshold = 0.9
     for i, data in enumerate(data_loader):
         optimizer.zero_grad()
         data, labels = data
