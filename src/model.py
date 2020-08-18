@@ -131,7 +131,7 @@ def to_cpu(t):
 
 
 
-def train_step_classification(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
+def train_step_classification(model, data_loader, optimizer, loss_criterion, verbose_epochs, device, step):
     model.train()
     prediction_threshold = 0.9
     for i, data in enumerate(data_loader):
@@ -163,11 +163,12 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
             print('Train Recall score: ', r)
             wandb.log({'Train Loss' : loss.item(), 'Train accuracy': a,
                         'Train F1  score' : f1, 'Train precision' : p,
-                        'Train Recall score:' : r})
+                        'Train Recall score:' : r}, step=step)
+            step += 1
 
 
 
-def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs, device):
+def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs, device, step):
     model.eval()
     prediction_threshold = 0.9
     for i, data in enumerate(data_loader):
@@ -196,7 +197,8 @@ def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs,
             print('Eval Recall score: ', r)
             wandb.log({'Eval Loss' : loss.item(), 'Eval accuracy': a,
                         'Eval F1  score' : f1, 'Eval precision' : p,
-                        'Eval Recall score:' : r})
+                        'Eval Recall score:' : r}, step=1)
+            step += 1
 
 
 def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
