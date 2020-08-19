@@ -167,6 +167,8 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
                         'Train Recall score:' : r}, step=step)
             step += 1
 
+        return step
+
 
 
 def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs, device, step):
@@ -199,11 +201,12 @@ def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs,
             print('Eval Recall score: ', r)
             wandb.log({'Eval Loss' : loss.item(), 'Eval accuracy': a,
                         'Eval F1  score' : f1, 'Eval precision' : p,
-                        'Eval Recall score:' : r}, step=1)
+                        'Eval Recall score:' : r}, step=step)
             step += 1
+    return step
 
 
-def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device):
+def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, device, step):
     model.train()
     for i, data in enumerate(data_loader):
         optimizer.zero_grad()
@@ -216,11 +219,13 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         if i % verbose_epochs == 0:
             print('[' + str(i) + '/' + len(data_loader) + ']')
             print('Train Loss:', loss.item())
-            wandb.log({'Train Loss': loss.item()})
+            wandb.log({'Train Loss': loss.item()}, step=step)
+            step += 1
+    return step
 
 
 
-def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
+def eval_step(model, data_loader, loss_criterion, verbose_epochs, device, step):
     model.eval()
     for i, data in enumerate(data_loader):
         data, labels = data
@@ -230,4 +235,6 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device):
         if i % verbose_epochs == 0:
             print('[' + str(i) + '/' + len(data_loader) + ']')
             print('Eval Loss:', loss.item())
-            wandb.log({'Eval Loss' :  loss.item()})
+            wandb.log({'Eval Loss' :  loss.item()}, step=step)
+            step += 1
+    return step
