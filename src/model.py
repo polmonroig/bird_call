@@ -145,6 +145,7 @@ def train_step_classification(model, data_loader, optimizer, loss_criterion, ver
         loss.backward()
         optimizer.step()
         if i % verbose_epochs == 0:
+            print('[' + str(i) + '/' + str(len(data_loader)) + ']')
             print('Train Loss:', loss.item())
             one_hot_labels = torch.zeros(out.shape)
             for i, label in enumerate(labels):
@@ -181,7 +182,7 @@ def eval_step_classification(model, data_loader, loss_criterion, verbose_epochs,
         out = model(data)
         loss = loss_criterion(out, labels.long())
         if i % verbose_epochs == 0:
-            print('[' + str(i) + '/' + len(data_loader) + ']')
+            print('[' + str(i) + '/' + str(len(data_loader)) + ']')
             print('Eval Loss:', loss.item())
             one_hot_labels = torch.zeros(out.shape)
             for i, label in enumerate(labels):
@@ -217,7 +218,7 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         loss.backward()
         optimizer.step()
         if i % verbose_epochs == 0:
-            print('[' + str(i) + '/' + len(data_loader) + ']')
+            print('[' + str(i) + '/' + str(len(data_loader)) + ']')
             print('Train Loss:', loss.item())
             wandb.log({'Train Loss': loss.item()}, step=step)
             step += 1
@@ -233,7 +234,7 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device, step):
         out = model(data)
         loss = loss_criterion(out, data).sum()
         if i % verbose_epochs == 0:
-            print('[' + str(i) + '/' + len(data_loader) + ']')
+            print('[' + str(i) + '/' + str(len(data_loader)) + ']')
             print('Eval Loss:', loss.item())
             wandb.log({'Eval Loss' :  loss.item()}, step=step)
             step += 1
