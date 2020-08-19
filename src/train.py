@@ -4,6 +4,7 @@ from utils import filesystem
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
+from utils.soft_dtw import SoftDTW
 from torchvision import transforms
 import pandas as pd
 import torch.optim as optim
@@ -56,7 +57,7 @@ def train_autoencoder(device, args):
 
     # main loop
     optimizer = optim.SGD(model.parameters(), lr=args.lr)
-    loss_criterion = nn.MSELoss()
+    loss_criterion = SoftDTW(gamma=1.0, normalize=True)
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
         train_step(model, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device)
@@ -111,8 +112,8 @@ def main():
         print('Running on cpu')
 
     wandb_parameter_register(args)
-    #train_autoencoder(device, args)
-    train_classifier(device, args)
+    train_autoencoder(device, args)
+    #train_classifier(device, args)
 
 if __name__ == '__main__':
     main()
