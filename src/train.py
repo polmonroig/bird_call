@@ -52,7 +52,7 @@ def train_autoencoder(device, args):
     eval_dataset = GenerativeDataset(eval_chunks, transforms=trf)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-    eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
+    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     # main loop
@@ -88,7 +88,7 @@ def train_classifier(device, args):
     eval_dataset = DiscriminativeDataset(eval_chunks, eval_labels, labels_encoder, transforms=trf)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-    eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
+    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     optimizer = optim.Adam(classifier.parameters(), lr=args.lr)
@@ -98,8 +98,9 @@ def train_classifier(device, args):
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
         train_count = train_step_classification(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device, train_count)
-        eval_count = eval_step_classification(classifier, eval_dataloader, loss_criterion, args.verbose_epochs, device, eval_count)
         torch.save(classifier.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
+        eval_count = eval_step_classification(classifier, eval_dataloader, loss_criterion, args.verbose_epochs, device, eval_count)
+
 
 
 def main():
