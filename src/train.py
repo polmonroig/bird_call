@@ -57,7 +57,7 @@ def train_autoencoder(device, args):
 
     # main loop
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    loss_criterion = SoftDTW(gamma=1.0)
+    loss_criterion = SoftDTW(use_cuda=True, gamma=0.1)
     train_count = 0
     eval_count = 0
     for epoch in range(args.n_epochs):

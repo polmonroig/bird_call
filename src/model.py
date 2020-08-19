@@ -214,7 +214,7 @@ def train_step(model, data_loader, optimizer, loss_criterion, verbose_epochs, de
         data, labels = data
         data = data.to(device).reshape(data.shape[0], 1, -1)
         out = model(data)
-        loss = loss_criterion(out, data).sum() # BEWARE: overflow might happen since we are summing all losses
+        loss = loss_criterion(out, data).mean() # BEWARE: overflow might happen since we are summing all losses
         loss.backward()
         optimizer.step()
         if i % verbose_epochs == 0:
@@ -232,7 +232,7 @@ def eval_step(model, data_loader, loss_criterion, verbose_epochs, device, step):
         data, labels = data
         data = data.to(device).reshape(data.shape[0], 1, -1)
         out = model(data)
-        loss = loss_criterion(out, data).sum()
+        loss = loss_criterion(out, data).mean()
         if i % verbose_epochs == 0:
             print('[' + str(i) + '/' + str(len(data_loader)) + ']')
             print('Eval Loss:', loss.item())
