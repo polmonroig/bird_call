@@ -58,11 +58,11 @@ def train_autoencoder(device, args):
     # main loop
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     loss_criterion = SoftDTW(gamma=1.0)
-    train_step = 0
+    train_count = 0
     eval_count = 0
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
-        train_step = train_step(model, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device, train_step)
+        train_count = train_step(model, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device, train_count)
         eval_count = eval_step(model, eval_dataloader, loss_criterion, args.verbose_epochs, device, eval_count)
         torch.save(model.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
 
@@ -93,11 +93,11 @@ def train_classifier(device, args):
 
     optimizer = optim.Adam(classifier.parameters(), lr=args.lr)
     loss_criterion = nn.CrossEntropyLoss()
-    train_step = 0
+    train_count = 0
     eval_count = 0
     for epoch in range(args.n_epochs):
         print('Epoch:', epoch, '/', args.n_epochs)
-        train_step = train_step_classification(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device, train_step)
+        train_count = train_step_classification(classifier, train_dataloader, optimizer, loss_criterion, args.verbose_epochs, device, train_count)
         eval_count = eval_step_classification(classifier, eval_dataloader, loss_criterion, args.verbose_epochs, device, eval_count)
         torch.save(classifier.state_dict(), os.path.join(wandb.run.dir, 'model_checkpoint.pt'))
 
