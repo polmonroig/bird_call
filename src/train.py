@@ -52,7 +52,7 @@ def train_autoencoder(device, args):
     eval_dataset = GenerativeDataset(eval_chunks, transforms=trf)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
+    eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     # main loop
@@ -86,7 +86,7 @@ def train_classifier(device, args):
     eval_dataset = DiscriminativeDataset(eval_chunks, eval_labels, labels_encoder, transforms=trf)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
-    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
+    eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size, shuffle=True,
                                 num_workers=4, collate_fn=None,pin_memory=True)
 
     optimizer = optim.Adam(classifier.parameters(), lr=args.lr)
